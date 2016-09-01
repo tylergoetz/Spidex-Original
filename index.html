@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="SpideX.css">
 <script type="text/javascript" src="SpideX.js"></script>
 <body>
     <!--SIDENAV-->
     <div id="mySidenav" class="sidenav">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="#">About</a>
-      <a href="#">todo</a>
-      <a href="#">todo</a>
+      <a href="#" id='about'>About</a>
       <a href="#">Contact</a>
     </div>
     <div class = "w3-btn w3-black" value = "Input Button">
@@ -27,13 +25,18 @@
       <div id = "controller">
         <div id = "playbtn" class = "w3-btn w3-hover-green" value = "play/pause"> Play/Pause </div>
       </div>
-      <div id = "masterTrack" class = "w3-container w3-red w3-hover-blue">
+      <div id= "timescale">
+          <div id = "timeslider"> slider </div>
+        <canvas id = "timeCanvas" width = '1000' height = '100' </canvas>
+
+      </div>
+      <div id = "masterTrack" class = "w3-container w3-red w3-hover-green">
         <h1> Master </h1>
         <p> Volume </p>
         <input type = "range" id="masterVolume" value = 1>
       </div>
       <!--Prototyping generic oscillator track WILL REMOVE-->
-      <div id = "track1" class = "w3-container w3-teal w3-hover-blue">
+      <div id = "track1" class = "w3-container w3-teal w3-hover-green">
         <h1> Oscillator </h1>
         <p> Frequency </p>
         <input type = "range" id="oscRange" value = "0">
