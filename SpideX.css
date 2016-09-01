@@ -53,3 +53,17 @@
 #p{
   font-size:10px;
 }
+#timeslider{
+  background-color: grey;
+  animation: slide 3s linear infinite;
+  width: 'device-width';
+  height: 50px;
+}
+@keyframes slide{
+  from{
+    tranfrom: translateX(0);
+  }
+  to{
+    transform: translateX(450px);
+  }
+}

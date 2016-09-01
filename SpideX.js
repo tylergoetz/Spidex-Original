@@ -11,6 +11,8 @@ function closeNav() {
 }
 
 
+
+
 //WEBAUDIO API
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //define the audio context
 var oscillator = audioCtx.createOscillator(); //creates a simple oscillator for playback
@@ -65,6 +67,26 @@ function toggleVolume(type){
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
+
+  var aboutInfo = document.getElementById("about");
+  aboutInfo.addEventListener('click', function(){
+    console.log(aboutInfo.innerHTML);
+    if(aboutInfo.innerHTML == "About" ){
+      var infoBox = document.createElement('w3-container');
+      infoBox.innerHTML = '<p> WebAudio API </p>'
+      aboutInfo.appendChild(infoBox);
+    }
+    else{
+      aboutInfo.innerHTML = 'About';
+    }
+  }, false);
+
+
+//TIMESCALE CANVAS
+var timeCanvas = document.getElementById("timeCanvas");
+var ctx = timeCanvas.getContext("2d");
+ctx.fillStyle = 'gray';
+ctx.fillRect(0,0, 600, 100);
 
 var osc = document.getElementById("playbtn");
 osc.addEventListener("click" , toggleSound, false);
