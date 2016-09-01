@@ -37,11 +37,20 @@ function toggleSound(){
   }
 }
 
+function toggleRange(){
+  oscillator.frequency.value = oscRange.value;
+}
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
+
 var osc = document.getElementById("playbtn");
 osc.addEventListener("click" , toggleSound, false);
+
+var oscRange = document.getElementById("oscRange");
+oscRange.addEventListener("click", toggleRange, false);
+oscRange.min = 60;
+oscRange.max = 1000;
 }
 
 //oscillator.stop(audioCtx.currentTime + 2);

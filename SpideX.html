@@ -22,9 +22,15 @@
     <div id="main">
       <div class = "w3-container w3-teal">
         <h1> SpideX </h1>
-
       </div>
-      <div id = "playbtn" class = "w3-btn w3-hover-green" value = "play/pause"> Play/Pause </div>
+      <!-- Main controller, todo: restart, skip forward, skip back, mute metronome-->
+      <div id = "controller">
+        <div id = "playbtn" class = "w3-btn w3-hover-green" value = "play/pause"> Play/Pause </div>
+      </div>
+      <div id = "track1" class = "w3-container w3-teal w3-hover-blue">
+        <h1> Oscillator </h1>
+        <input type = "range" id="oscRange" value = "0">
+      </div>
     </div>
 
 </body>
