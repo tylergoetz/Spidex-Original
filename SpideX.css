@@ -49,6 +49,12 @@
 }
 
 #track1{
-  height:150px;
+  height:200px;
   font-size: 20px;
+}
+#oscRange{
+  z-index : 1;
+}
+#p{
+  font-size:10px;
 }
