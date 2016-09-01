@@ -36,26 +36,31 @@ oscillator.frequency.value = 60;
 var oscPlaying = false
 var oscInit = false;
 
-function toggleSound(){
-  if(!oscInit){
-    oscillator.start();
-    oscInit = true;
-  }
-  if(oscPlaying == true){
-    oscGainNode.disconnect(masterGainNode);
-    oscPlaying = false;
-  }
-  else{
-    oscGainNode.connect(masterGainNode);
-    oscPlaying = true;
+function toggleSound(type){
+  if(type != 'Master'){
+    if(!oscInit){
+      oscillator.start();
+      oscInit = true;
+    }
+    if(oscPlaying == true){
+      oscGainNode.disconnect(masterGainNode);
+      oscPlaying = false;
+    }
+    else{
+      oscGainNode.connect(masterGainNode);
+      oscPlaying = true;
+    }
   }
 }
 
 function toggleRange(){
   oscillator.frequency.value = oscRange.value;
 }
-function toggleVolume(){
+function toggleVolume(type){
   oscGainNode.gain.value = oscVolume.value;
+  if(type == 'master'){
+    masterGainNode.gain.value = master.value;
+  }
 }
 
 //have to wait for the page to fully load before searching for DOM elements
@@ -63,6 +68,13 @@ window.onload= function(){
 
 var osc = document.getElementById("playbtn");
 osc.addEventListener("click" , toggleSound, false);
+
+var master = document.getElementById("masterTrack");
+master.addEventListener('click', function(){toggleVolume('master')}, false);
+master.min = 0;
+master.max = 1;
+
+
 
 var oscRange = document.getElementById("oscRange");
 oscRange.addEventListener("click", toggleRange, false);
@@ -72,7 +84,7 @@ oscRange.max = 1000;
 var oscVolume = document.getElementById("oscVolume");
 oscVolume.addEventListener("click", toggleVolume, false);
 oscVolume.min = 0;
-oscVolume.max = 2;
+oscVolume.max = 1;
 oscVolume.step = 0.1;
 }
 
