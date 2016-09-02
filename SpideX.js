@@ -67,7 +67,7 @@ function toggleVolume(type){
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
-
+  //sidemenu modiification
   var aboutInfo = document.getElementById("about");
   aboutInfo.addEventListener('click', function(){
     console.log(aboutInfo.innerHTML);
@@ -88,26 +88,28 @@ var ctx = timeCanvas.getContext("2d");
 ctx.fillStyle = 'gray';
 ctx.fillRect(0,0, 600, 100);
 
+//play/pause functionality
 var osc = document.getElementById("playbtn");
 osc.addEventListener("click" , toggleSound, false);
 
-var master = document.getElementById("masterTrack");
-master.addEventListener('click', function(){toggleVolume('master')}, false);
+//master fader
+var master = document.getElementById("masterVolume");
+master.addEventListener('click', function(){masterGainNode.gain.value = master.value}, false);
 master.min = 0;
-master.max = 1;
+master.max = 1
+master.step = 0.1;
 
 
-
+//define oscillator range toggle
 var oscRange = document.getElementById("oscRange");
 oscRange.addEventListener("click", toggleRange, false);
 oscRange.min = 60;
 oscRange.max = 1000;
 
+//define oscillator volume toggle
 var oscVolume = document.getElementById("oscVolume");
 oscVolume.addEventListener("click", toggleVolume, false);
 oscVolume.min = 0;
 oscVolume.max = 1;
 oscVolume.step = 0.1;
 }
-
-//oscillator.stop(audioCtx.currentTime + 2);
