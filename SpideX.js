@@ -24,41 +24,60 @@ oscillator.connect(oscGainNode); //link osc to gainnode
 oscGainNode.connect(masterGainNode);
 masterGainNode.connect(audioCtx.destination); //link gainnode to audiocontext.destination the generic output
 
+var nodeList = [oscGainNode];
+
+console.log(nodeList);
 /*Workflow so far:
   Given a request for a new track---
     +Create given track type (osc, audiostream, etc)
+      -add newTrack given name, to list of all tracks
+      -create gainNode for given track, link to masterGainNode
+      -create audiostream, oscialltor, or midi track
+          --requires more
+      -
     +Create controller nodes for track (allows for individual mute, volume control)
+      -prototyped slider controllers done
     +if track is midi controllabe i.e. vitrual instrument
       -create input-ready keyboard, allows for scheduled playback of the given input
 */
 
+
+
 //Work in progress of prototyping basic oscillator track
 oscillator.type = 'sine';
 oscillator.frequency.value = 60;
-var oscPlaying = false
+var playing = false;
 var oscInit = false;
 
-function toggleSound(type){
-  if(type != 'Master'){
+
+//THESE ARE TOO SPECIFIC, TAKE INPUT PARAMETER TYPE TO GENERICISE THE TOGGLE CAPABILITIES
+function toggleSound(node){
+  if(node != 'Master'){
     if(!oscInit){
       oscillator.start();
       oscInit = true;
     }
-    if(oscPlaying == true){
-      oscGainNode.disconnect(masterGainNode);
-      oscPlaying = false;
+    if(playing == true){
+      for(i = 0; i < nodeList.length; i++ ){
+        nodeList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
+      }
+      playing = false;
+      console.log(nodelist[0] + ' disconnected.' )
     }
-    else{
-      oscGainNode.connect(masterGainNode);
-      oscPlaying = true;
+    else if(!playing){
+      for(i = 0; i < nodeList.length; i++){
+        nodeList[i].connect(masterGainNode);
+      }
+      playing = true;
+      console.log(nodeList + ' connected. Playing: ' + playing)
     }
   }
 }
 
-function toggleRange(){
+function toggleRange(node){
   oscillator.frequency.value = oscRange.value;
 }
-function toggleVolume(type){
+function toggleVolume(node){
   oscGainNode.gain.value = oscVolume.value;
   if(type == 'master'){
     masterGainNode.gain.value = master.value;
@@ -90,7 +109,7 @@ ctx.fillRect(0,0, 600, 100);
 
 //play/pause functionality
 var osc = document.getElementById("playbtn");
-osc.addEventListener("click" , toggleSound, false);
+osc.addEventListener("click" , toggleSound(), false);
 
 //master fader
 var master = document.getElementById("masterVolume");
