@@ -24,14 +24,14 @@ oscillator.connect(oscGainNode); //link osc to gainnode
 oscGainNode.connect(masterGainNode);
 masterGainNode.connect(audioCtx.destination); //link gainnode to audiocontext.destination the generic output
 
-var nodeList = [oscGainNode];
+var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconnect features, must be linked to masterGainNode
 
-console.log(nodeList);
 /*Workflow so far:
   Given a request for a new track---
     +Create given track type (osc, audiostream, etc)
       -add newTrack given name, to list of all tracks
       -create gainNode for given track, link to masterGainNode
+      -add gainNode to nodeGainList
       -create audiostream, oscialltor, or midi track
           --requires more
       -
@@ -48,29 +48,50 @@ oscillator.type = 'sine';
 oscillator.frequency.value = 60;
 var playing = false;
 var oscInit = false;
+oscillator.start();
 
+/*generateTrack
+  Will generate a given track, performing as follows:
+    -Create given track type
+    -Create and link gainNode to master and add to nodeGainList
+*/
+function generateTrack(trackType){
+  console.log('Attempting to generate new track');
+  if(trackType == 'midi'){
+    var newNode = document.createElement('div');
+    newNode.id = 'newNode';
+    newNode.className = 'w3-container w3-teal w3-hover-green';
+    newNode.innerHTML = '<h1>New Track</h1>' +
+                        '<p> Volume </p>' +
+                        '<input type = "range" id="newNodeVolume" value = 1>';
+    var newGainNode = audioCtx.createGain();
+    newGainNode.connect(masterGainNode);
+    nodeGainList.push(newGainNode);
+    document.getElementById('main').insertBefore(newNode, document.getElementById('track1'));
+    console.log('working');
+
+
+  }
+  else if(trackType == 'audio'){
+
+  }
+}
 
 //THESE ARE TOO SPECIFIC, TAKE INPUT PARAMETER TYPE TO GENERICISE THE TOGGLE CAPABILITIES
-function toggleSound(node){
-  if(node != 'Master'){
-    if(!oscInit){
-      oscillator.start();
-      oscInit = true;
+function toggleSound(){
+  if(playing == true){
+    for(i = 0; i < nodeGainList.length; i++ ){
+      nodeGainList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
     }
-    if(playing == true){
-      for(i = 0; i < nodeList.length; i++ ){
-        nodeList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
-      }
-      playing = false;
-      console.log(nodelist[0] + ' disconnected.' )
+    playing = false;
+    console.log(nodeGainList + ' disconnected.' )
+  }
+  else if(!playing){
+    for(i = 0; i < nodeGainList.length; i++){
+      nodeGainList[i].connect(masterGainNode);
     }
-    else if(!playing){
-      for(i = 0; i < nodeList.length; i++){
-        nodeList[i].connect(masterGainNode);
-      }
-      playing = true;
-      console.log(nodeList + ' connected. Playing: ' + playing)
-    }
+    playing = true;
+    console.log(nodeGainList + ' connected. Playing: ' + playing)
   }
 }
 
@@ -79,7 +100,7 @@ function toggleRange(node){
 }
 function toggleVolume(node){
   oscGainNode.gain.value = oscVolume.value;
-  if(type == 'master'){
+  if(node == 'master'){
     masterGainNode.gain.value = master.value;
   }
 }
@@ -100,6 +121,16 @@ window.onload= function(){
     }
   }, false);
 
+//Track generation
+var audioTrackRequest = document.getElementById('newAudioTrack');
+audioTrackRequest.addEventListener("click", function(){
+  generateTrack('audio');
+}, false);
+
+var midiTrackRequest = document.getElementById('newMidiTrack');
+midiTrackRequest.addEventListener("click", function(){
+  generateTrack('midi');
+}, false);
 
 //TIMESCALE CANVAS
 var timeCanvas = document.getElementById("timeCanvas");
@@ -109,7 +140,9 @@ ctx.fillRect(0,0, 600, 100);
 
 //play/pause functionality
 var osc = document.getElementById("playbtn");
-osc.addEventListener("click" , toggleSound(), false);
+osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
+  toggleSound();
+}, false);
 
 //master fader
 var master = document.getElementById("masterVolume");
@@ -118,7 +151,7 @@ master.min = 0;
 master.max = 1
 master.step = 0.1;
 
-
+//WILL REMOVE protoyped to get idea of Workflow
 //define oscillator range toggle
 var oscRange = document.getElementById("oscRange");
 oscRange.addEventListener("click", toggleRange, false);
