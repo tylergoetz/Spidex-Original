@@ -1,3 +1,6 @@
+$(document).ready(function(){
+
+
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
 function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
@@ -65,6 +68,7 @@ function generateTrack(trackType){
   if(trackType == 'midi'){
     var newNode = document.createElement('div');
     newNode.id = 'track' + trackCnt;
+    newNode.className = 'track';
     trackList[trackCnt] = newNode;
     trackCnt++;
     newNode.className = 'w3-container w3-teal w3-hover-green';
@@ -123,29 +127,32 @@ function generateTrack(trackType){
 
     var octave = 4; //sets the current octave for the notes
     var note  = 49;    //find the current note based on 88-key keyboard, starts at C
-    var freq = Math.pow(2, 1/12)*440; //alg for calculating note frequency based on octave and current note
 
     var keyList = [];
 
-    for(var i = 0; i < 4;i++){
+    for(var i = 0; i < 12;i++){
       var key = document.createElement('button');
       keyText = document.createTextNode('key' + i);
       key.appendChild(keyText);
       key.id = 'key' + i;
-      key.class = 'n';
+      key.className = 'n';
       keyList.push(key);
       key.note = 48+i;
+      key.freq = 0;
+      key.oscillators = os;
       var jq = key.id;
+
+
+
+
+
       //console.log('key.note: ' + key.note)
+
 
       document.getElementById(newNode.id).appendChild(key);
       console.log(keyList);
     }
-    $('body').on('click', 'button', function(){
-      freq = Math.pow(2, 1/12)*440;
-      os.frequency.value = freq;
-      console.log(key.id + ', note: ' + key.note + ", freq: " + freq);
-    });
+
 
 
 
@@ -188,6 +195,19 @@ function toggleVolume(node){
   }
 }
 
+//LISTENER FOR MIDI TRACK KEYS, must be called here to listen for dynamic elements
+$('#main').on('click', ".n", function(){
+  var elem = this;
+  var freq = Math.pow(2, (elem.note-49)/12)*440;
+  elem.freq = freq;
+  elem.oscillators.frequency.value = freq;
+  console.log(elem.id + ', note: ' + elem.note + ", freq: " + freq);
+});
+
+//keyboard event space-to-play
+//var playToggle = document.getElementById('playbtn');
+
+
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
   //sidemenu modiification
@@ -215,6 +235,8 @@ window.onload= function(){
     generateTrack('midi');
   }, false);
 
+
+
   //TIMESCALE CANVAS
   var timeCanvas = document.getElementById("timeCanvas");
   var ctx = timeCanvas.getContext("2d");
@@ -226,6 +248,14 @@ window.onload= function(){
   osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
     toggleSound();
   }, false);
+  //play pause by keyboard 'space'
+  document.addEventListener('keyup', function(evt){
+    var keyCode = evt.keyCode || e.which;
+    if(evt.keyCode == 32){
+      evt.preventDefault();
+      toggleSound();
+    }
+  });
 
   //master fader
   var master = document.getElementById("masterVolume");
@@ -249,4 +279,10 @@ window.onload= function(){
   oscVolume.min = 0;
   oscVolume.max = 1;
   oscVolume.step = 0.1;
+
+
+  //keyboard-controls
+
 }
+
+});
