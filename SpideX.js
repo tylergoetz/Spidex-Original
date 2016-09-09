@@ -24,7 +24,7 @@ oscillator.connect(oscGainNode); //link osc to gainnode
 oscGainNode.connect(masterGainNode);
 masterGainNode.connect(audioCtx.destination); //link gainnode to audiocontext.destination the generic output
 
-var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconnect features, must be linked to masterGainNode
+
 
 /*Workflow so far:
   Given a request for a new track---
@@ -43,32 +43,115 @@ var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconn
 
 
 
-//Work in progress of prototyping basic oscillator track
+var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconnect features, must be linked to masterGainNode
+
+
 oscillator.type = 'sine';
-oscillator.frequency.value = 60;
+oscillator.frequency.value = 420;
 var playing = false;
 var oscInit = false;
 oscillator.start();
-
+toggleSound();
+toggleSound();
 /*generateTrack
   Will generate a given track, performing as follows:
     -Create given track type
     -Create and link gainNode to master and add to nodeGainList
 */
+var trackCnt = 0;
+var trackList = [];
 function generateTrack(trackType){
   console.log('Attempting to generate new track');
   if(trackType == 'midi'){
     var newNode = document.createElement('div');
-    newNode.id = 'newNode';
+    newNode.id = 'track' + trackCnt;
+    trackList[trackCnt] = newNode;
+    trackCnt++;
     newNode.className = 'w3-container w3-teal w3-hover-green';
     newNode.innerHTML = '<h1>New Track</h1>' +
                         '<p> Volume </p>' +
                         '<input type = "range" id="newNodeVolume" value = 1>';
     var newGainNode = audioCtx.createGain();
+    newGainNode.id = 'gainNode' + trackCnt;
     newGainNode.connect(masterGainNode);
     nodeGainList.push(newGainNode);
-    document.getElementById('main').insertBefore(newNode, document.getElementById('track1'));
-    console.log('working');
+
+    var insert;
+    if(trackCnt == 1){
+      insert = 'masterTrack';
+      document.getElementById('main').insertBefore(newNode, document.getElementById(insert));
+    }
+    else if(trackCnt >= 1){
+      insert = trackList[trackCnt-2]; //because of increment on, we want 2 back
+      document.getElementById('main').insertBefore(newNode, document.getElementById(insert.id));
+    }
+
+    console.log('Inserting track before: ' + insert.id);
+
+
+    newNode.onclick = function(event){
+      console.log(newNode.id)
+    }
+
+    //track fade-in animation
+    newNode.style.opacity = 0;                //simply for animation
+    window.getComputedStyle(newNode).opacity; //same as above
+    newNode.style.opacity = 1;                //same as above
+    console.log('Current Track List: ' + trackList);
+
+
+    /*create midi keyboard
+    12 divs 7 base notes with 5 sharps
+    c-b, with 5 sharps
+    establish scale 7 iterations
+    for now:
+      -create osc to match notes
+    */
+
+    //WILL REMOVE osc
+    var oscGN = audioCtx.createGain();
+    var os = audioCtx.createOscillator();
+    os.connect(oscGN);
+    oscGN.connect(masterGainNode);
+    nodeGainList.push(oscGN);
+    os.type = 'sine';
+    os.frequency.value =500;
+    os.start();
+    toggleSound();
+    toggleSound();
+
+
+    var octave = 4; //sets the current octave for the notes
+    var note  = 49;    //find the current note based on 88-key keyboard, starts at C
+    var freq = Math.pow(2, 1/12)*440; //alg for calculating note frequency based on octave and current note
+
+    var keyList = [];
+
+    for(var i = 0; i < 4;i++){
+      var key = document.createElement('button');
+      keyText = document.createTextNode('key' + i);
+      key.appendChild(keyText);
+      key.id = 'key' + i;
+      key.class = 'n';
+      keyList.push(key);
+      key.note = 48+i;
+      var jq = key.id;
+      //console.log('key.note: ' + key.note)
+
+      document.getElementById(newNode.id).appendChild(key);
+      console.log(keyList);
+    }
+    $('body').on('click', 'button', function(){
+      freq = Math.pow(2, 1/12)*440;
+      os.frequency.value = freq;
+      console.log(key.id + ', note: ' + key.note + ", freq: " + freq);
+    });
+
+
+
+
+
+
 
 
   }
@@ -121,47 +204,49 @@ window.onload= function(){
     }
   }, false);
 
-//Track generation
-var audioTrackRequest = document.getElementById('newAudioTrack');
-audioTrackRequest.addEventListener("click", function(){
-  generateTrack('audio');
-}, false);
+  //Track generation
+  var audioTrackRequest = document.getElementById('newAudioTrack');
+  audioTrackRequest.addEventListener("click", function(){
+    generateTrack('audio');
+  }, false);
 
-var midiTrackRequest = document.getElementById('newMidiTrack');
-midiTrackRequest.addEventListener("click", function(){
-  generateTrack('midi');
-}, false);
+  var midiTrackRequest = document.getElementById('newMidiTrack');
+  midiTrackRequest.addEventListener("click", function(){
+    generateTrack('midi');
+  }, false);
 
-//TIMESCALE CANVAS
-var timeCanvas = document.getElementById("timeCanvas");
-var ctx = timeCanvas.getContext("2d");
-ctx.fillStyle = 'gray';
-ctx.fillRect(0,0, 600, 100);
+  //TIMESCALE CANVAS
+  var timeCanvas = document.getElementById("timeCanvas");
+  var ctx = timeCanvas.getContext("2d");
+  ctx.fillStyle = 'gray';
+  ctx.fillRect(0,0, 600, 100);
 
-//play/pause functionality
-var osc = document.getElementById("playbtn");
-osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
-  toggleSound();
-}, false);
+  //play/pause functionality
+  var osc = document.getElementById("playbtn");
+  osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
+    toggleSound();
+  }, false);
 
-//master fader
-var master = document.getElementById("masterVolume");
-master.addEventListener('click', function(){masterGainNode.gain.value = master.value}, false);
-master.min = 0;
-master.max = 1
-master.step = 0.1;
+  //master fader
+  var master = document.getElementById("masterVolume");
+  master.oninput = function(){masterGainNode.gain.value = master.value};
+  master.min = 0;
+  master.max = 1
+  master.step = 0.1;
 
-//WILL REMOVE protoyped to get idea of Workflow
-//define oscillator range toggle
-var oscRange = document.getElementById("oscRange");
-oscRange.addEventListener("click", toggleRange, false);
-oscRange.min = 60;
-oscRange.max = 1000;
+  //WILL REMOVE protoyped to get idea of Workflow
+  //define oscillator range toggle
+  //dont use eventlistener for continous input on range elements
+  var oscRange = document.getElementById("oscRange");
+  oscRange.oninput = function(){toggleRange()};
+  oscRange.min = 60;
+  oscRange.max = 1000;
 
-//define oscillator volume toggle
-var oscVolume = document.getElementById("oscVolume");
-oscVolume.addEventListener("click", toggleVolume, false);
-oscVolume.min = 0;
-oscVolume.max = 1;
-oscVolume.step = 0.1;
+
+  //define oscillator volume toggle
+  var oscVolume = document.getElementById("oscVolume");
+  oscVolume.addEventListener("click", toggleVolume, false);
+  oscVolume.min = 0;
+  oscVolume.max = 1;
+  oscVolume.step = 0.1;
 }

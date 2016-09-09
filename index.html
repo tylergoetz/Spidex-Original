@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="SpideX.css">
 <script type="text/javascript" src="SpideX.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <body>
     <!--SIDENAV-->
     <div id="mySidenav" class="sidenav">
@@ -14,7 +15,7 @@
     <div class = "w3-btn w3-black" value = "Input Button">
 
       <!-- Use any element to open the sidenav -->
-      <span onclick="openNav()" class = 'w3-hover-green'>Menu</span>
+      <span onclick="openNav()" class = 'w3-hover-green' id = 'menuBtn'>Menu</span>
     </div>
 
     <!-- ALL PAGE CONTENT MUST BE HERE FOR SIDENAV TO PUSH -->
@@ -55,7 +56,7 @@
 
 
       <!--Prototyping generic oscillator track WILL REMOVE-->
-      <div id = "track1" class = "w3-container w3-teal w3-hover-green">
+      <div id = "oscTrack" class = "w3-container w3-teal w3-hover-green">
         <h1> Oscillator </h1>
         <p> Frequency </p>
         <input type = "range" id="oscRange" value = "0">
