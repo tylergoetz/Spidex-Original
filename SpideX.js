@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function(){   //wait for jquey and javascript to load
 
 
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
@@ -73,10 +73,24 @@ function generateTrack(trackType){
     trackCnt++;
     newNode.className = 'w3-container w3-teal w3-hover-green';
     newNode.innerHTML = '<h1>New Track</h1>' +
+                        '<p> Volume </p>';
+    var newVol = document.createElement('input');
+    newVol.type = 'range';
+    newVol.id = 'newNodeVolume' + trackCnt;
+    newVol.className = 'vol'
+    newVol.value = 1;
+    newVol.min = 0;
+    newVol.max = 1;
+    newVol.step = 0.1;
+    newNode.appendChild(newVol);
+
+    /*newNode.innerHTML = '<h1>New Track</h1>' +
                         '<p> Volume </p>' +
-                        '<input type = "range" id="newNodeVolume" value = 1>';
+                        '<input type = "range" id="newNodeVolume"    value = 1>';
+    */
     var newGainNode = audioCtx.createGain();
     newGainNode.id = 'gainNode' + trackCnt;
+
     newGainNode.connect(masterGainNode);
     nodeGainList.push(newGainNode);
 
@@ -124,35 +138,40 @@ function generateTrack(trackType){
     toggleSound();
     toggleSound();
 
+    newVol.vol = oscGN;
 
     var octave = 4; //sets the current octave for the notes
     var note  = 49;    //find the current note based on 88-key keyboard, starts at C
 
     var keyList = [];
 
-    for(var i = 0; i < 12;i++){
+    for(var i = 0; i < 12;i++){ //create each key assigning unique id and class n
       var key = document.createElement('button');
       keyText = document.createTextNode('key' + i);
       key.appendChild(keyText);
       key.id = 'key' + i;
       key.className = 'n';
       keyList.push(key);
-      key.note = 48+i;
+      key.note = 40+i;
       key.freq = 0;
       key.oscillators = os;
       var jq = key.id;
-
-
-
-
-
-      //console.log('key.note: ' + key.note)
-
-
       document.getElementById(newNode.id).appendChild(key);
-      console.log(keyList);
+      if((i%2) == 0 && i < 5){
+        key.style.background = 'white';
+      }
+      else if(i%2 > 0 && i != 5 && i != 7 && i != 9 && i != 11){
+        key.style.background = 'black';
+      }
+      else if(i%2 == 0 && i >= 5){
+        key.style.background = 'black';
+      }
+      else {
+        key.style.background = 'white';
+      }
+      var spc = createElement("")
     }
-
+    console.log(keyList);
 
 
 
@@ -203,9 +222,10 @@ $('#main').on('click', ".n", function(){
   elem.oscillators.frequency.value = freq;
   console.log(elem.id + ', note: ' + elem.note + ", freq: " + freq);
 });
-
-//keyboard event space-to-play
-//var playToggle = document.getElementById('playbtn');
+//LISTENER FOR DYNAMIC TRACK VOLUME TOGGLE
+$('#main').on('input', '.vol', function(){
+  this.vol.gain.value = this.value;
+});
 
 
 //have to wait for the page to fully load before searching for DOM elements
@@ -279,9 +299,6 @@ window.onload= function(){
   oscVolume.min = 0;
   oscVolume.max = 1;
   oscVolume.step = 0.1;
-
-
-  //keyboard-controls
 
 }
 
