@@ -169,7 +169,7 @@ function generateTrack(trackType){
       else {
         key.style.background = 'white';
       }
-      var spc = createElement("")
+    //  var spc = createElement("")
     }
     console.log(keyList);
 
