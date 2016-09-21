@@ -28,14 +28,15 @@
 
       <!-- Main controller, todo: restart, skip forward, skip back, mute metronome-->
       <ul id = "controller" class = 'w3-navbar w3-card-2 w3-black'>
-        <li><a id = 'playbtn' class = 'w3-button w3-hover-green'> Play/Pause</a></li>
+        <li><a href = 'javascript:void(0)' id = 'playbtn' class = 'w3-button w3-hover-green'> Play/Pause</a></li>
         <li class = 'w3-dropdown-hover'>
-         <a href="#" id = 'trackDropdown' class = 'w3-hover-green'> New Track </a>
+         <a href="javascript:void(0)" id = 'trackDropdown' class = 'w3-hover-green'> New Track </a>
           <div class = 'w3-dropdown-content w3-green w3-card-4'>
             <a id = 'newAudioTrack' href = '#' class = 'w3-button w3-black w3-hover-green'> Audio Track </a>
             <a id = 'newMidiTrack'  href = '#' class = 'w3-button w3-black w3-hover-green'> Midi Track </a>
-          </div>
+          </div
         </li>
+        <li><a href = 'javascript:void(0)' id = 'BPM' class = 'w3-button w3-black w3-hover-green' onclick="changeBPM()"> BPM : </a> </li>
       </ul>
       <!-- END MAIN CONTROLLER -->
 

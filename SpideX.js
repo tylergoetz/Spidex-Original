@@ -1,4 +1,4 @@
-$(document).ready(function(){   //wait for jquey and javascript to load
+
 
 
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
@@ -13,7 +13,18 @@ function closeNav() {
     document.getElementById("main").style.marginLeft = "0";
 }
 
+//all onclick registered events must be set here
 
+/////////////////////changeBPM////////////////////////////////////
+function changeBPM(tempo){
+    console.log('Changing tempos.');
+    var newBPM = parseInt(prompt('Enter New Tempo'));
+    if(newBPM >= 1 && newBPM <= 999){
+      document.getElementById('BPM').innerHTML = 'BPM ' + newBPM;
+    }
+}
+
+$(document).ready(function(){   //wait for jquey and javascript to load
 
 
 //WEBAUDIO API
@@ -22,11 +33,25 @@ var oscillator = audioCtx.createOscillator(); //creates a simple oscillator for 
 var masterGainNode = audioCtx.createGain();         //allow control of the volume of the audiocontext
 var oscGainNode = audioCtx.createGain();
 
+//for now create a generic compressor to handle audio from multiple sources
+var compNode = audioCtx.createDynamicsCompressor();
+compNode.threshold.value = -50;
+compNode.knee.value = 40;
+compNode.ratio.value = 12;
+compNode.reduction.value = -20;
+compNode.attack.value = 0;
+compNode.release.value = 0.25;
+
 //connect the audio sources together for output
 oscillator.connect(oscGainNode); //link osc to gainnode
 oscGainNode.connect(masterGainNode);
-masterGainNode.connect(audioCtx.destination); //link gainnode to audiocontext.destination the generic output
+masterGainNode.connect(compNode); //link gainnode to audiocontext.destination the generic output
+compNode.connect(audioCtx.destination);
 
+
+//TIMESCALE VARS
+var tempo = 120; //default value
+var timeStart = new Date();
 
 
 /*Workflow so far:
@@ -144,7 +169,8 @@ function generateTrack(trackType){
     var note  = 49;    //find the current note based on 88-key keyboard, starts at C
 
     var keyList = [];
-
+    var spc = document.createElement('br');
+    newNode.appendChild(spc);
     for(var i = 0; i < 12;i++){ //create each key assigning unique id and class n
       var key = document.createElement('button');
       keyText = document.createTextNode('key' + i);
@@ -157,6 +183,7 @@ function generateTrack(trackType){
       key.oscillators = os;
       var jq = key.id;
       document.getElementById(newNode.id).appendChild(key);
+      //style the keys to emulate side-facing keyboard middle-c on top ascending notes down
       if((i%2) == 0 && i < 5){
         key.style.background = 'white';
       }
@@ -169,7 +196,8 @@ function generateTrack(trackType){
       else {
         key.style.background = 'white';
       }
-    //  var spc = createElement("")
+      var nodeBr = document.createElement('br');
+      document.getElementById(newNode.id).insertBefore(nodeBr, key); //create a br for every new key
     }
     console.log(keyList);
 
@@ -201,6 +229,8 @@ function toggleSound(){
     }
     playing = true;
     console.log(nodeGainList + ' connected. Playing: ' + playing)
+    var timeCurrent = new Date();
+    console.log("Playback time: " + timeCurrent.getSeconds() - timeStart.getSeconds());
   }
 }
 
@@ -214,6 +244,9 @@ function toggleVolume(node){
   }
 }
 
+
+
+//////////////////LISTENERS//////////////////////////////////////
 //LISTENER FOR MIDI TRACK KEYS, must be called here to listen for dynamic elements
 $('#main').on('click', ".n", function(){
   var elem = this;
@@ -299,6 +332,7 @@ window.onload= function(){
   oscVolume.min = 0;
   oscVolume.max = 1;
   oscVolume.step = 0.1;
+
 
 }
 
