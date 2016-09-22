@@ -51,7 +51,7 @@ compNode.connect(audioCtx.destination);
 
 //TIMESCALE VARS
 var tempo = 120; //default value
-var timeStart = new Date();
+
 
 
 /*Workflow so far:
@@ -216,23 +216,28 @@ function generateTrack(trackType){
 
 //THESE ARE TOO SPECIFIC, TAKE INPUT PARAMETER TYPE TO GENERICISE THE TOGGLE CAPABILITIES
 function toggleSound(){
-  if(playing == true){
+  if(playing){
     for(i = 0; i < nodeGainList.length; i++ ){
       nodeGainList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
     }
     playing = false;
     console.log(nodeGainList + ' disconnected.' )
+    var elaspedTime = Date.now() - timeStart;
+    console.log("Playback time = " + elaspedTime/1000 + " seconds.");
   }
   else if(!playing){
     for(i = 0; i < nodeGainList.length; i++){
       nodeGainList[i].connect(masterGainNode);
     }
+    timeStart = Date.now();
     playing = true;
+    console.log("Time: " + timeStart);
     console.log(nodeGainList + ' connected. Playing: ' + playing)
-    var timeCurrent = new Date();
-    console.log("Playback time: " + timeCurrent.getSeconds() - timeStart.getSeconds());
+
   }
 }
+
+
 
 function toggleRange(node){
   oscillator.frequency.value = oscRange.value;
@@ -332,6 +337,11 @@ window.onload= function(){
   oscVolume.min = 0;
   oscVolume.max = 1;
   oscVolume.step = 0.1;
+
+  if(playing){
+
+    console.log('changing time ');
+  }
 
 
 }
