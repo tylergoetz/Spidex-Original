@@ -15,15 +15,28 @@ function closeNav() {
 
 //all onclick registered events must be set here
 
+//TIMESCALE VARS
+var tempo = 120; //default value
+var metronomeActive = false;    //bool query to check if user turned metronome on/off
+var trackLength = 60; //in seconds 
+var timeSigBeats = 4;
+var timeSigBar = 4;     //collectively timeSigBeats/timeSigBar gives beats per bar i.e. time signature
+
+
 /////////////////////changeBPM////////////////////////////////////
 function changeBPM(tempo){
     console.log('Changing tempos.');
-    var newBPM = parseInt(prompt('Enter New Tempo'));
-    if(newBPM >= 1 && newBPM <= 999){
-      document.getElementById('BPM').innerHTML = 'BPM ' + newBPM;
+    if(!playing){
+        var newBPM = parseInt(prompt('Enter New Tempo'));
+        if(newBPM >= 1 && newBPM <= 999){
+          document.getElementById('BPM').innerHTML = 'BPM ' + newBPM;
+          tempo = newBPM;
+        }
+        
     }
 }
 
+////////////////////DOCUMENT READY/////////////////////////////
 $(document).ready(function(){   //wait for jquey and javascript to load
 
 
@@ -49,8 +62,6 @@ masterGainNode.connect(compNode); //link gainnode to audiocontext.destination th
 compNode.connect(audioCtx.destination);
 
 
-//TIMESCALE VARS
-var tempo = 120; //default value
 
 
 
@@ -221,6 +232,9 @@ function toggleSound(){
       nodeGainList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
     }
     playing = false;
+    if(metronomeActive){
+        metronome('start');   
+    }
     console.log(nodeGainList + ' disconnected.' )
     var elaspedTime = Date.now() - timeStart;
     console.log("Playback time = " + elaspedTime/1000 + " seconds.");
@@ -231,13 +245,24 @@ function toggleSound(){
     }
     timeStart = Date.now();
     playing = true;
+    if(metronomeActive){
+        metronome('start');   
+    }
     console.log("Time: " + timeStart);
     console.log(nodeGainList + ' connected. Playing: ' + playing)
 
   }
 }
 
-
+function metronomeStart(start){
+    if(start == 'start'){
+        //start metrnome   
+    }
+    else if(start == 'stop'){
+        //stop metronome
+    }
+    
+}
 
 function toggleRange(node){
   oscillator.frequency.value = oscRange.value;
