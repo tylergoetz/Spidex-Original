@@ -289,7 +289,8 @@ $('#main').on('click', ".n", function(){
 $('#main').on('input', '.vol', function(){
   this.vol.gain.value = this.value;
 });
-
+//will change
+document.getElementbyId('time').innerHTML = timeSigBeats + '/'+ timeSigBar;
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
