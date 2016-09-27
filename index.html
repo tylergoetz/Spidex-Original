@@ -3,7 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="SpideX.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript" src="SpideX.js"></script>
+
 <body>
     <!--SIDENAV-->
     <div id="mySidenav" class="sidenav">
@@ -13,30 +15,51 @@
     </div>
     <div class = "w3-btn w3-black" value = "Input Button">
 
-    <!-- Use any element to open the sidenav -->
-    <span onclick="openNav()">Menu</span>
-  </div>
-    <!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->
+      <!-- Use any element to open the sidenav -->
+      <span onclick="openNav()" class = 'w3-hover-green' id = 'menuBtn'>Menu</span>
+    </div>
+
+    <!-- ALL PAGE CONTENT MUST BE HERE FOR SIDENAV TO PUSH -->
+    <!--MAIN -->
     <div id="main">
       <div class = "w3-container w3-teal">
         <h1> SpideX </h1>
       </div>
+
       <!-- Main controller, todo: restart, skip forward, skip back, mute metronome-->
-      <div id = "controller">
-        <div id = "playbtn" class = "w3-btn w3-hover-green" value = "play/pause"> Play/Pause </div>
-      </div>
+      <ul id = "controller" class = 'w3-navbar w3-card-2 w3-black'>
+        <li><a href = 'javascript:void(0)' id = 'playbtn' class = 'w3-button w3-hover-green'> Play/Pause</a></li>
+        <li class = 'w3-dropdown-hover'>
+         <a href="javascript:void(0)" id = 'trackDropdown' class = 'w3-hover-green'> New Track </a>
+          <div class = 'w3-dropdown-content w3-green w3-card-4'>
+            <a id = 'newAudioTrack' href = '#' class = 'w3-button w3-black w3-hover-green'> Audio Track </a>
+            <a id = 'newMidiTrack'  href = '#' class = 'w3-button w3-black w3-hover-green'> Midi Track </a>
+          </div
+        </li>
+        <li><a href = 'javascript:void(0)' id = 'BPM' class = 'w3-button w3-black w3-hover-green' onclick="changeBPM()"> BPM : </a> </li>
+        <li> <a href = 'javascript:void(0)' id = 'time' class = 'w3-containter w3-black w3-hover-green'> Time </a></li>
+      </ul>
+      <!-- END MAIN CONTROLLER -->
+
+      <!-- TIMESCALE -->
       <div id= "timescale">
-          <div id = "timeslider"> slider </div>
-        <canvas id = "timeCanvas" width = '1000' height = '100' </canvas>
+          <div id = "timeslider" width= '5000'> TimeScale </div>
+        <canvas id = "timeCanvas" width = '5000' height = '5' </canvas>
 
       </div>
+      <!-- END TIMESCALE -->
+
+      <!--MASTER TRACK (already initialized as a requirement of all tracks) -->
       <div id = "masterTrack" class = "w3-container w3-red w3-hover-green">
         <h1> Master </h1>
         <p> Volume </p>
         <input type = "range" id="masterVolume" value = 1>
       </div>
+      <!-- END MASTER TRACK-->
+
+
       <!--Prototyping generic oscillator track WILL REMOVE-->
-      <div id = "track1" class = "w3-container w3-teal w3-hover-green">
+      <div id = "oscTrack" class = "w3-container w3-teal w3-hover-green">
         <h1> Oscillator </h1>
         <p> Frequency </p>
         <input type = "range" id="oscRange" value = "0">
@@ -45,6 +68,6 @@
       </div>
 
     </div>
-
+    <!-- END MAIN-->
 </body>
 </html>
