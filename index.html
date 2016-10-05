@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="SpideX.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
 <script type="text/javascript" src="SpideX.js"></script>
 
 <body>
@@ -23,7 +24,7 @@
     <!--MAIN -->
     <div id="main">
       <div class = "w3-container w3-teal">
-        <h1> SpideX </h1>
+        <h1 id='spidex'> SpideX </h1>
       </div>
 
       <!-- Main controller, todo: restart, skip forward, skip back, mute metronome-->
@@ -38,6 +39,7 @@
         </li>
         <li><a href = 'javascript:void(0)' id = 'BPM' class = 'w3-button w3-black w3-hover-green' onclick="changeBPM()"> BPM : </a> </li>
         <li> <a href = 'javascript:void(0)' id = 'time' class = 'w3-containter w3-black w3-hover-green'> Time </a></li>
+        <li> <a href = 'javascript:void(0)' id = 'playbacktime' class = 'w3-containter w3-black w3-hover-green'> Playback Time </a></li>
       </ul>
       <!-- END MAIN CONTROLLER -->
 

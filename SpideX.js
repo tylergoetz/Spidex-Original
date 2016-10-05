@@ -1,4 +1,8 @@
-
+window.onkeydown = function(event){ //preventing some default keyboard actions
+  if(event.keyCode === 32){ //prevent scrolldown on spacebar
+    event.preventDefault();
+  }
+}
 
 
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
@@ -18,10 +22,10 @@ function closeNav() {
 //TIMESCALE VARS
 var tempo = 120; //default value
 var metronomeActive = false;    //bool query to check if user turned metronome on/off
-var trackLength = 60; //in seconds 
+var trackLength = 60; //in seconds
 var timeSigBeats = 4;
 var timeSigBar = 4;     //collectively timeSigBeats/timeSigBar gives beats per bar i.e. time signature
-
+var  playing = false;
 
 /////////////////////changeBPM////////////////////////////////////
 function changeBPM(tempo){
@@ -32,7 +36,7 @@ function changeBPM(tempo){
           document.getElementById('BPM').innerHTML = 'BPM ' + newBPM;
           tempo = newBPM;
         }
-        
+
     }
 }
 
@@ -87,7 +91,7 @@ var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconn
 
 oscillator.type = 'sine';
 oscillator.frequency.value = 420;
-var playing = false;
+
 var oscInit = false;
 oscillator.start();
 toggleSound();
@@ -233,7 +237,7 @@ function toggleSound(){
     }
     playing = false;
     if(metronomeActive){
-        metronome('start');   
+        metronome('start');
     }
     console.log(nodeGainList + ' disconnected.' )
     var elaspedTime = Date.now() - timeStart;
@@ -246,7 +250,7 @@ function toggleSound(){
     timeStart = Date.now();
     playing = true;
     if(metronomeActive){
-        metronome('start');   
+        metronome('start');
     }
     console.log("Time: " + timeStart);
     console.log(nodeGainList + ' connected. Playing: ' + playing)
@@ -254,14 +258,19 @@ function toggleSound(){
   }
 }
 
+
+while(playing){
+  alert('playing');
+}
+
 function metronomeStart(start){
     if(start == 'start'){
-        //start metrnome   
+        //start metrnome
     }
     else if(start == 'stop'){
         //stop metronome
     }
-    
+
 }
 
 function toggleRange(node){
@@ -290,10 +299,13 @@ $('#main').on('input', '.vol', function(){
   this.vol.gain.value = this.value;
 });
 //will change
-document.getElementbyId('time').innerHTML = timeSigBeats + '/'+ timeSigBar;
+document.getElementById('time').innerHTML = timeSigBeats + '/'+ timeSigBar;
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
+
+
+
   //sidemenu modiification
   var aboutInfo = document.getElementById("about");
   aboutInfo.addEventListener('click', function(){
