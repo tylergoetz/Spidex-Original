@@ -354,7 +354,7 @@ window.onload= function(){
     setInterval(function(){
       if(playing){
         timeCurrent = ((Date.now() - timeStart)/1000);
-        document.getElementB yId('playbacktime').innerHTML = timeCurrent.toFixed(2) + " : " + trackLength;
+        document.getElementById('playbacktime').innerHTML = timeCurrent.toFixed(2) + " : " + trackLength;
         ctx.fillStyle = 'black';
         console.log(timeCurrent/trackLength);
         ctx.fillRect(0 + (timeCurrent/trackLength)*(30*trackLength), 0, 10, 100);
