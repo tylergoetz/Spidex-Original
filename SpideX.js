@@ -22,10 +22,12 @@ function closeNav() {
 //TIMESCALE VARS
 var tempo = 120; //default value
 var metronomeActive = false;    //bool query to check if user turned metronome on/off
-var trackLength = 60; //in seconds
+var trackLength = 10; //in seconds
 var timeSigBeats = 4;
 var timeSigBar = 4;     //collectively timeSigBeats/timeSigBar gives beats per bar i.e. time signature
 var  playing = false;
+var trackPosition = 0;
+var timeCurrent = Date.now();
 
 /////////////////////changeBPM////////////////////////////////////
 function changeBPM(tempo){
@@ -229,6 +231,8 @@ function generateTrack(trackType){
   }
 }
 
+
+
 //THESE ARE TOO SPECIFIC, TAKE INPUT PARAMETER TYPE TO GENERICISE THE TOGGLE CAPABILITIES
 function toggleSound(){
   if(playing){
@@ -236,22 +240,16 @@ function toggleSound(){
       nodeGainList[i].disconnect(masterGainNode);   //disconnect all nodes from the master to stop playback
     }
     playing = false;
-    if(metronomeActive){
-        metronome('start');
-    }
     console.log(nodeGainList + ' disconnected.' )
-    var elaspedTime = Date.now() - timeStart;
-    console.log("Playback time = " + elaspedTime/1000 + " seconds.");
+    timeCurrent = Date.now() - timeStart;
+    console.log("Playback time = " + timeCurrent/1000 + " seconds.");
   }
   else if(!playing){
     for(i = 0; i < nodeGainList.length; i++){
-      nodeGainList[i].connect(masterGainNode);
+    nodeGainList[i].connect(masterGainNode);
     }
     timeStart = Date.now();
     playing = true;
-    if(metronomeActive){
-        metronome('start');
-    }
     console.log("Time: " + timeStart);
     console.log(nodeGainList + ' connected. Playing: ' + playing)
 
@@ -259,19 +257,7 @@ function toggleSound(){
 }
 
 
-while(playing){
-  alert('playing');
-}
 
-function metronomeStart(start){
-    if(start == 'start'){
-        //start metrnome
-    }
-    else if(start == 'stop'){
-        //stop metronome
-    }
-
-}
 
 function toggleRange(node){
   oscillator.frequency.value = oscRange.value;
@@ -298,13 +284,13 @@ $('#main').on('click', ".n", function(){
 $('#main').on('input', '.vol', function(){
   this.vol.gain.value = this.value;
 });
-//will change
-document.getElementById('time').innerHTML = timeSigBeats + '/'+ timeSigBar;
+
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
 
-
+  //will change
+  document.getElementById('time').innerHTML = timeSigBeats + '/'+ timeSigBar;
 
   //sidemenu modiification
   var aboutInfo = document.getElementById("about");
@@ -320,6 +306,13 @@ window.onload= function(){
     }
   }, false);
 
+  //TIMESCALE CANVAS
+  var timeCanvas = document.getElementById("timeCanvas");
+  var ctx = timeCanvas.getContext("2d");
+  ctx.fillStyle = 'gray';
+  ctx.fillRect(0,0, 30*trackLength, 100);
+
+
   //Track generation
   var audioTrackRequest = document.getElementById('newAudioTrack');
   audioTrackRequest.addEventListener("click", function(){
@@ -333,25 +326,47 @@ window.onload= function(){
 
 
 
-  //TIMESCALE CANVAS
-  var timeCanvas = document.getElementById("timeCanvas");
-  var ctx = timeCanvas.getContext("2d");
-  ctx.fillStyle = 'gray';
-  ctx.fillRect(0,0, 600, 100);
 
-  //play/pause functionality
-  var osc = document.getElementById("playbtn");
-  osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
-    toggleSound();
-  }, false);
-  //play pause by keyboard 'space'
-  document.addEventListener('keyup', function(evt){
-    var keyCode = evt.keyCode || e.which;
-    if(evt.keyCode == 32){
-      evt.preventDefault();
+
+  //PLAY/PAUSE
+
+    var osc = document.getElementById("playbtn");
+    osc.addEventListener("click" , function(){  /*note: cannot call functions straight have to define function*/
       toggleSound();
-    }
-  });
+      ctx.fillStyle = 'gray';   //redraw timescale at start of stop of playing
+      ctx.fillRect(0,0, 30*trackLength, 100);
+    }, false);
+
+    //play pause by keyboard 'space'
+    document.addEventListener('keyup', function(evt){
+      var keyCode = evt.keyCode || e.which;
+      if(evt.keyCode == 32){
+        evt.preventDefault();
+        toggleSound();
+        if(playing){
+          ctx.fillStyle = 'gray';   //redraw timescale at start of stop of playing
+          ctx.fillRect(0,0, 30*trackLength+10, 100);
+        }
+      }
+    });
+
+    //PLAYBACK TIME
+    setInterval(function(){
+      if(playing){
+        timeCurrent = ((Date.now() - timeStart)/1000);
+        document.getElementB yId('playbacktime').innerHTML = timeCurrent.toFixed(2) + " : " + trackLength;
+        ctx.fillStyle = 'black';
+        console.log(timeCurrent/trackLength);
+        ctx.fillRect(0 + (timeCurrent/trackLength)*(30*trackLength), 0, 10, 100);
+      }
+      if(playing && timeCurrent > trackLength){
+        toggleSound();
+      }
+
+    }, 1)
+
+
+
 
   //master fader
   var master = document.getElementById("masterVolume");
@@ -375,12 +390,6 @@ window.onload= function(){
   oscVolume.min = 0;
   oscVolume.max = 1;
   oscVolume.step = 0.1;
-
-  if(playing){
-
-    console.log('changing time ');
-  }
-
 
 }
 
