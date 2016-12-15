@@ -88,14 +88,15 @@ compNode.connect(audioCtx.destination);
 
 
 
-var nodeGainList = [oscGainNode];   //contains all gainnodes for connect/disconnect features, must be linked to masterGainNode
+var nodeGainList = [];   //contains all gainnodes for connect/disconnect features, must be linked to masterGainNode
 
 
 oscillator.type = 'sine';
 oscillator.frequency.value = 420;
+oscillator.start();
+oscillator.stop();
 
 var oscInit = false;
-oscillator.start();
 toggleSound();
 toggleSound();
 /*generateTrack
@@ -109,8 +110,8 @@ function generateTrack(trackType){
   console.log('Attempting to generate new track');
   if(trackType == 'midi'){
     var newNode = document.createElement('div');
-    newNode.id = 'track' + trackCnt;
-    newNode.className = 'track';
+    newNode.id = 'track';
+    newNode.class = 'track';
     trackList[trackCnt] = newNode;
     trackCnt++;
     newNode.className = 'w3-container w3-teal w3-hover-green';
@@ -119,7 +120,7 @@ function generateTrack(trackType){
     var newVol = document.createElement('input');
     newVol.type = 'range';
     newVol.id = 'newNodeVolume' + trackCnt;
-    newVol.className = 'vol'
+    newVol.className = 'vol';
     newVol.value = 1;
     newVol.min = 0;
     newVol.max = 1;
@@ -149,10 +150,10 @@ function generateTrack(trackType){
     console.log('Inserting track before: ' + insert.id);
 
 
-    newNode.onclick = function(event){
+    /*newNode.onclick = function(event){
       console.log(newNode.id)
     }
-
+    */
     //track fade-in animation
     newNode.style.opacity = 0;                //simply for animation
     window.getComputedStyle(newNode).opacity; //same as above
@@ -188,35 +189,51 @@ function generateTrack(trackType){
     var keyList = [];
     var spc = document.createElement('br');
     newNode.appendChild(spc);
-    for(var i = 0; i < 12;i++){ //create each key assigning unique id and class n
-      var key = document.createElement('button');
-      keyText = document.createTextNode('key' + i);
-      key.appendChild(keyText);
-      key.id = 'key' + i;
-      key.className = 'n';
-      keyList.push(key);
+    var midiGrid = document.createElement('table');
+    midiGrid.className = 'grid';
+    var c = 0;
+    for(var i = 0; i < 12;++i){ //create each key assigning unique id and class n
+      var key = midiGrid.appendChild(document.createElement('key'));
       key.note = 40+i;
-      key.freq = 0;
-      key.oscillators = os;
-      var jq = key.id;
+
+      for(var j=0;j<10;++j){
+        var cell = key.appendChild(document.createElement('button'));
+        cell.id = 'key';
+
+        cell.className = 'n';
+        cell.style.width = '100px';
+        cell.style.height = '20px';
+        cell.style.background = "white";
+        cell.innerHTML = false;
+        cell.freq = Math.pow(2, i/12)*440;
+        cell.oscillators = os;
+        if(j >= 9){
+          var br = key.appendChild(document.createElement('br'));
+        }
+        if(j == 0)
+        /*styling*/ if((i%2) == 0 && i < 5){
+                      cell.style.background = 'white';
+                    }
+                    else if(i%2 > 0 && i != 5 && i != 7 && i != 9 && i != 11){
+                      cell.style.background = 'black';
+                    }
+                    else if(i%2 == 0 && i >= 5){
+                      cell.style.background = 'black';
+                    }
+                    else {
+                      cell.style.background = 'white';
+        /*end styling*/  }
+      }
       document.getElementById(newNode.id).appendChild(key);
       //style the keys to emulate side-facing keyboard middle-c on top ascending notes down
-      if((i%2) == 0 && i < 5){
-        key.style.background = 'white';
-      }
-      else if(i%2 > 0 && i != 5 && i != 7 && i != 9 && i != 11){
-        key.style.background = 'black';
-      }
-      else if(i%2 == 0 && i >= 5){
-        key.style.background = 'black';
-      }
-      else {
-        key.style.background = 'white';
-      }
-      var nodeBr = document.createElement('br');
-      document.getElementById(newNode.id).insertBefore(nodeBr, key); //create a br for every new key
+
+      //var nodeBr = document.createElement('br');
+      //document.getElementById(newNode.id).insertBefore(nodeBr, key); //create a br for every new key
+
     }
-    console.log(keyList);
+    //console.log(keyList);
+    //ESTABLISH GRID INTERFACE
+    createMidiGrid();
 
 
 
@@ -230,6 +247,21 @@ function generateTrack(trackType){
 
   }
 }
+
+  //CREATEMIDIGRID - attempts to create a grid to sync playback and notes to a midiTrack
+  //                 based on user input
+  //instantiate 2d array
+  //get mouse clicks and signal appropriate pos in array
+  //on resize redraw array with appripriate signals
+  function createMidiGrid(){
+    //instanstiate object
+    var midiGrid = {
+        height: 50,
+        width: 200,
+        length:  trackLength
+
+    };
+  }
 
 
 
@@ -273,18 +305,42 @@ function toggleVolume(node){
 
 //////////////////LISTENERS//////////////////////////////////////
 //LISTENER FOR MIDI TRACK KEYS, must be called here to listen for dynamic elements
-$('#main').on('click', ".n", function(){
-  var elem = this;
-  var freq = Math.pow(2, (elem.note-49)/12)*440;
-  elem.freq = freq;
-  elem.oscillators.frequency.value = freq;
-  console.log(elem.id + ', note: ' + elem.note + ", freq: " + freq);
+$('#main').on('click', "#key", function(){
+
+    var elem = this;
+    //var freq = Math.pow(2, (elem.note-49)/12)*440;
+    //elem.freq = freq;
+    elem.oscillators.frequency.value = elem.freq;
+    console.log(elem.id + ", freq: " + elem.freq);
+    elem.seq = !elem.seq;
+    elem.innerHTML = elem.seq;
+    /*Need more info about notes:
+      length: quarter,eight, etc...
+      Velocity: how hard did i press the note?
+      freq: already filled in
+      How to sync playback?
+        1. Arrays that iterate over every measure syncing notes per
+        2. Singular array implementation? Array contains info for all notes in order (possible issues with timing notes together?)
+        3.
+    */
 });
 //LISTENER FOR DYNAMIC TRACK VOLUME TOGGLE
 $('#main').on('input', '.vol', function(){
   this.vol.gain.value = this.value;
 });
 
+/*
+$('#main').on('click', "#track", function(){
+  var x = event.clientX-this.offsetLeft;
+  var y = event.clientY-this.offsetTop+4;
+  x = Math.floor(x);
+  y = Math.floor(y);
+
+  var el = this.id;
+  console.log("track:" + el + ", X: " + x+ ", Y: " + y);
+
+});
+*/
 
 //have to wait for the page to fully load before searching for DOM elements
 window.onload= function(){
@@ -295,7 +351,7 @@ window.onload= function(){
   //sidemenu modiification
   var aboutInfo = document.getElementById("about");
   aboutInfo.addEventListener('click', function(){
-    console.log(aboutInfo.innerHTML);
+    //console.log(aboutInfo.innerHTML);
     if(aboutInfo.innerHTML == "About" ){
       var infoBox = document.createElement('w3-container');
       infoBox.innerHTML = '<p> WebAudio API </p>'
@@ -350,7 +406,7 @@ window.onload= function(){
       }
     });
 
-    //PLAYBACK TIME
+    //PLAYBACK TIME END playback functionality
     setInterval(function(){
       if(playing){
         timeCurrent = ((Date.now() - timeStart)/1000);
@@ -358,6 +414,8 @@ window.onload= function(){
         ctx.fillStyle = 'black';
         console.log(timeCurrent/trackLength);
         ctx.fillRect(0 + (timeCurrent/trackLength)*(30*trackLength), 0, 10, 100);
+        //seek out tracks to sync playback
+
       }
       if(playing && timeCurrent > trackLength){
         toggleSound();
